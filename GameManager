@@ -1,0 +1,102 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+public class NewBehaviourScript : MonoBehaviour //Maybe rename script in unity, also at this line
+{
+    public Image Bar;
+    private float fill = 0f;
+    public Button but;
+    public int money = PlayerPrefs.GetInt("money", money);
+    private float fps = 0.02f;
+    public Text moneyText;
+    public GameObject zomb;
+    private float fillpersecond = 0.01f;
+
+    private int spawnlvl = PlayerPrefs.GetInt("spawnlvl", spawnlvl);
+    private int spawncd = PlayerPrefs.GetInt("spawncd", spawncd);
+
+    void Start()
+    {
+        Bar.fillAmount = fill;
+        Bar.fillAmount = PlayerPrefs.GetFloat("fill", Bar.fillAmount);
+
+        fps = PlayerPrefs.GetFloat("fps", fps);
+        fillpersecond = PlayerPrefs.GetFloat("fillpersecond", fillpersecond);
+
+
+        switch (spawncd)
+        {
+            case 0:
+                fps = 0.03f;
+                fillpersecond = 0.05f;
+                break;
+            case 1:
+                fps = 0.05f;
+                fillpersecond = 0.07f;
+                break;
+            case 2:
+                fps = 0.06f;
+                fillpersecond = 0.08f;
+                break;
+            case 3:
+                fps = 0.07f;
+                fillpersecond = 0.09f;
+                break;
+            case 4:
+                fps = 0.08f;
+                fillpersecond = 0.1f;
+                break;
+            default:
+                Debug.Log("Variable spawncd isn`t 0, 1, 2, 3 or 4.");
+                break;
+        }
+
+    }
+    
+    void Update()
+    {
+
+        zomb.transform.position = new Vector3(9.58f, -2.85f, -3.918083f);
+
+        moneyText.text = money.ToString();
+
+        Bar.fillAmount += Time.deltaTime * fillpersecond;
+        PlayerPrefs.SetFloat("fill", Bar.fillAmount);
+        if (Bar.fillAmount >= 1f)
+        {
+            spawn();
+            Bar.fillAmount = 0f;
+        }
+    }
+
+    public void ButtonClick()
+    {
+
+        Bar.fillAmount += fps;
+        PlayerPrefs.SetFloat("fill", Bar.fillAmount);
+
+    }
+
+    public void plusmoney()
+    {
+        money++;
+        PlayerPrefs.SetInt("money", money);
+    }
+
+    void spawn()
+    {
+
+        for (int i = 0; i < spawnlvl; i++) //if you will have one more zombie, change "i" value on "1".
+        {
+            Instantiate(zomb, new Vector3(Random.Range(-2.07f, 2.07f), Random.Range(0.75f, -0.66f), -3.918083f), new Quaternion(0, 0, 0, 0));
+        }
+
+    }
+
+    public void nextscene(int sceneNumber)
+    {
+        SceneManager.LoadScene(sceneNumber);
+    }
+}
